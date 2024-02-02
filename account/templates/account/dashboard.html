@@ -1,0 +1,123 @@
+{% extends 'account\base.html' %}
+{% block title %}
+Dashboard
+{% endblock %}
+{% block content %}
+<div class="container d-md-flex align-items-stretch">
+    <!-- Page Content  -->
+    <div id="content" class="mr-4  p-2 p-md-2 pt-3">
+        <div class="row d-flex justify-content-around">
+            <div class="col-md-4 p-3">
+                <div class="card text-center" style="background-color: rgb(0, 0, 0);">
+                    <div class="card-header">
+                        Featured
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title" style="color:aliceblue;">Special title treatment</h5>
+                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        2 days ago
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 p-3">
+                <div class="card text-center"style="background-color: rgb(0, 0, 0);">
+                    <div class="card-header">
+                        Featured
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"style="color:aliceblue;">Special title treatment</h5>
+                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        2 days ago
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 p-3">
+                <div class="card text-center"style="background-color: rgb(0, 0, 0);">
+                    <div class="card-header">
+                        Featured
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"style="color:aliceblue;">Special title treatment</h5>
+                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        2 days ago
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav id="sidebar">
+        <div class="p-4 pt-5 border-left" style="background-color: black;">
+            <h5 style="color: #ffffff;">Categories</h5>
+            <ul class="list-unstyled components mb-5">
+                <li>
+                    <a href="#pageSubmenu2" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle" style="color: white;">Mens
+                        Shoes</a>
+                    <ul class="collapse list-unstyled" id="pageSubmenu2">
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Casual</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Football</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Jordan</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Lifestyle</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Running</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Soccer</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Sports</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#pageSubmenu3" data-toggle="collapse" aria-expanded="false"
+                        class="dropdown-toggle" style="color: white;">Accessories</a>
+                    <ul class="collapse list-unstyled" id="pageSubmenu3">
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Nicklace</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Ring</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Bag</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Sacks</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Lipstick</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#pageSubmenu4" data-toggle="collapse" aria-expanded="false"
+                        class="dropdown-toggle" style="color: white;">Clothes</a>
+                    <ul class="collapse list-unstyled" id="pageSubmenu4">
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Jeans</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> T-shirt</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Jacket</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Shoes</a></li>
+                        <li><a href="#" style="color: white;"><span class="fa fa-chevron-right mr-2"></span> Sweater</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="mb-5">
+                <h5 style="color: white;">Tag Cloud</h5>
+                <div class="tagcloud">
+                    <a href="#" class="tag-cloud-link" style="color: white;">dish</a>
+                    <a href="#" class="tag-cloud-link" style="color: white;">menu</a>
+                    <a href="#" class="tag-cloud-link" style="color: white;">food</a>
+                    <a href="#" class="tag-cloud-link" style="color: white;">sweet</a>
+                    <a href="#" class="tag-cloud-link" style="color: white;">tasty</a>
+                    <a href="#" class="tag-cloud-link" style="color: white;">delicious</a>
+                    <a href="#" class="tag-cloud-link" style="color: white;">desserts</a>
+                    <a href="#" class="tag-cloud-link" style="color: white;">drinks</a>
+                </div>
+            </div>
+            <div class="mb-5">
+                <h5 style="color: white;">Newsletter</h5>
+                <form action="#" class="subscribe-form">
+                    <div class="form-group d-flex">
+                        <div class="icon"><span class="icon-paper-plane"></span></div>
+                        <input type="text" class="form-control" placeholder="Enter Email Address">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+</div>
+{% endblock %}

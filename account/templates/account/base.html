@@ -1,0 +1,60 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>
+        {% block title %}
+
+        {% endblock %} | MISCELLANEOS_EXPENSES
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'account/css/style.css'%} ">
+</head>
+
+<body style="background-color: rgb(22, 22, 22);">
+    <div class="container" style="background-color: white;">
+        <nav class="navbar navbar-expand-lg navbar-light bg-transperent border-bottom my-2">
+            <a class="navbar-brand" href="#">Miscellaneous Expenses</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'dashboard_view' %}">Dashbaord <span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'members_view' %}">Members</a>
+                    </li>
+                </ul>
+                <span class="navbar-text">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile_view' %}">
+                                <img src="https://s3.eu-central-1.amazonaws.com/bootstrapbaymisc/blog/24_days_bootstrap/fox.jpg"
+                                    width="40" height="40"
+                                    style="border-radius: 50%; border: 1px solid rgb(181, 181, 181); padding: 3px;">
+                            </a>
+                        </li>
+                    </ul>
+                </span>
+            </div>
+        </nav>
+        {% block content %}
+        {% endblock %}
+    </div>
+    <script src="{% static 'account/js/jquery.min.js' %}"></script>
+    <script src="{% static 'account/js/popper.js' %}"></script>
+    <script src="{% static 'account/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'account/js/main.js' %}"></script>
+</body>
+
+</html>
