@@ -3,5 +3,84 @@
 Members
 {% endblock %}
 {% block content %}
-<h1>Member Page </h1>
+<style>
+    /* Define the font-family and color */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+            'Open Sans', 'Helvetica Neue', sans-serif;
+        color: white;
+    }
+
+    /* Set text color for table headers */
+    th {
+        color: white;
+    }
+
+    /* Set text color for table data */
+    td {
+        color: white;
+    }
+
+    .col-12 {
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    /* Apply glow effect on hover */
+    .col-12:hover {
+        box-shadow: 0 0 20px rgba(196, 69, 250, 0.3);
+        /* Glow effect */
+    }
+</style>
+<div class="row mx-2 my-4 justify-content-between">
+    <div class="col-md-3 p-1 justify-content-center">
+        <h3 style="color: #3c99fd;">Member Add</h3>
+        <form action="" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            {% if field.name == 'is_active' %}
+            <div class="form-check" style="margin: 10px 0px; padding-left: 0px;">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1" name="{{ field.name }}">
+                <label class="form-check-label" for="exampleCheck1">{{ field.label_tag }}</label>
+                {{ field.errors }}
+            </div>
+            {% else %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                {{ field }}
+                {{ field.errors }}
+            </div>
+            {% endif %}
+            {% endfor %}
+            <input type="submit" value="Add" class="btn btn-success">
+        </form>
+    </div>
+    <div class="col-md-9 p-5 justify-content-center row ">
+        <div class="col-12" style="background-color: #3c3c3c; border-radius: 10px; padding-top: 10px;">
+            <caption>Members Infomation</caption>
+            <table class="table table-hover table-responsive ">
+
+                <thead>
+                    <tr>
+                        <th scope="col">Fullname</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Mobile</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row"><img
+                                src="https://img.freepik.com/premium-vector/man-profile-cartoon_18591-58482.jpg?w=2000"
+                                width="30"> Althan Travis</th>
+                        <td>sffa@gmail.com</td>
+                        <td>(34234523)</td>
+                        <td><i class="fa fa-pencil-square-o fa-2x " aria-hidden="true"></i><i
+                                class="fa fa-trash-o fa-2x ml-2" aria-hidden="true"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 {% endblock %}

@@ -11,6 +11,7 @@ class SuperUserModel(BaseClass):
     email = models.EmailField(max_length=255, unique=True)
     mobile = models.CharField(max_length=255)
     password = models.CharField(max_length=255,blank=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -29,6 +30,23 @@ class SuperUserModel(BaseClass):
             from_mail = settings.EMAIL_HOST_USER
             to_mail = [f'{self.email}']
             send_mail(subject,message,from_mail,to_mail)
-        return super().save(*args, **kwargs)
+            
+        super(SuperUserModel,self).save(*args, **kwargs)
 
+class MembersModel(BaseClass):
+    superuser_id = models.ForeignKey(SuperUserModel, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255, unique=True)
+    mobile = models.CharField(max_length=255)
+    password = models.CharField(max_length=255, blank=True)
+    is_active = models.BooleanField(default=True)
 
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+    def save(self, *args, **kwargs):
+        if not self.password:
+            self.password = generate_password(8)
+
+        super(MembersModel, self).save(*args, **kwargs)
