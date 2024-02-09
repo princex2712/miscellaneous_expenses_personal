@@ -68,15 +68,17 @@ Members
                     </tr>
                 </thead>
                 <tbody>
+                    {% for member in members%}
                     <tr>
                         <th scope="row"><img
                                 src="https://img.freepik.com/premium-vector/man-profile-cartoon_18591-58482.jpg?w=2000"
-                                width="30"> Althan Travis</th>
-                        <td>sffa@gmail.com</td>
-                        <td>(34234523)</td>
+                                width="30">{{member.first_name}} {{member.last_name}}</th>
+                        <td>{{member.email}}</td>
+                        <td>{{member.mobile}}</td>
                         <td><i class="fa fa-pencil-square-o fa-2x " aria-hidden="true"></i><i
                                 class="fa fa-trash-o fa-2x ml-2" aria-hidden="true"></i></td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

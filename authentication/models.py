@@ -12,6 +12,7 @@ class SuperUserModel(BaseClass):
     mobile = models.CharField(max_length=255)
     password = models.CharField(max_length=255,blank=True)
     is_active = models.BooleanField(default=True)
+    otp = models.CharField(max_length=50,default=100000)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
