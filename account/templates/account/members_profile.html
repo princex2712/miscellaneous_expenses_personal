@@ -1,0 +1,59 @@
+{% extends 'account\members_base.html' %}
+{% block title %}
+Profile
+{% endblock %}
+{% block content %}
+
+<style>
+    /* Define the background color for the entire row */
+    .row-background {
+        background-color: #3c3c3c;
+
+    }
+
+    /* Define the background color for the personal-information section */
+    #personal-information {
+        background-color: #484848;
+        border-radius: 10px;
+        padding: 10px;
+        margin: 5px;
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    #personal-information:hover {
+        box-shadow: 0 0 20px rgba(196, 69, 250, 0.3);
+    }
+
+    /* Define rounded corners for the left side of the profile section */
+    .rounded-left {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    h4 {
+        color: white;
+    }
+</style>
+<div class="row mx-2 my-4 justify-content-between">
+    <div class="col-md-3 p-1 justify-content-center mb-2">
+        <div class="text-center">
+            <img src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" class="rounded-circle" alt="..."
+                height="150" width="150">
+            <h4>{{request.session.first_name}} {{request.session.last_name}}</h4>
+            <hr>
+            <div class="text-left" id="personal-information" style="background-color: #484848;">
+                <h6 class="text-center underline">Personal Information</h6>
+                <p class="m-0"><span class="font-weight-bold ">Email : </span>{{request.session.email}}</p>
+                <p class="m-0"><span class="font-weight-bold ">Mobile : </span>{{request.session.mobile}}</p>
+            </div>
+            <div class="d-flex justify-content-center my-5">
+                <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9 p-1">
+
+    </div>
+</div>
+
+{% endblock %}

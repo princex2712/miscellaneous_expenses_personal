@@ -7,5 +7,8 @@ urlpatterns = [
     path('', login_view, name='login_view'),
     path('forgot_password_view/', forgot_password_view, name='forgot_password_view'),
     path('otp_varification_view/', otp_varification_view, name='otp_varification_view'),
-    path('logout/',logout,name='logout')
+    path('logout/',logout,name='logout'),
+    path('members_login_view/',members_login_view,name='members_login_view'),
+    path('members_dashboard_view/',members_dashboard_view,name='members_dashboard_view'),
+    path('members_profile_view/',members_profile_view,name='members_profile_view'),
 ]

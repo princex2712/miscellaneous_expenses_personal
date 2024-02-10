@@ -185,3 +185,34 @@ def logout(request):
     request.session.clear()
     messages.success(request,'Logged Out Success')
     return redirect('login_view')
+
+
+
+def members_login_view(request):
+    if request.method == "POST":
+        email_ = request.POST['email']
+        password_ = request.POST['password']
+        
+        try:
+            getMembers = MembersModel.objects.get(email = email_)
+        except MembersModel.DoesNotExist:
+            messages.warning(request,"Member Does not Exist!")
+            redirect('members_login_view')
+        else:
+            if password_ == getMembers.password:
+                request.session['superuser_id'] = getMembers.superuser_id_id
+                request.session['members_id'] = getMembers.id
+                request.session['first_name'] = getMembers.first_name
+                request.session['last_name'] = getMembers.last_name
+                request.session['email'] = getMembers.email
+                request.session['mobile'] = getMembers.mobile
+                messages.success(request,'Login Success!')
+                return redirect('members_dashboard_view')
+    return render(request,'account/members_login.html')
+
+
+def members_dashboard_view(request):
+    return render(request,'account/members_dashboard.html')
+
+def members_profile_view(request):
+    return render(request,'account/members_profile.html')
