@@ -3,8 +3,79 @@
 Profile
 {% endblock %}
 {% block content %}
-
 <style>
+    .card {
+        width: 190px;
+        height: 254px;
+        background-image: linear-gradient(163deg, #1a1a1a 0%, #1a1a1a 100%);
+        border-radius: 20px;
+        transition: all .3s;
+    }
+
+    .card2 {
+        width: 190px;
+        height: 254px;
+        background-color: #1a1a1a;
+        border-radius: 20px;
+        transition: all .2s;
+    }
+
+    .card2:hover {
+        transform: scale(0.98);
+        border-radius: 20px;
+    }
+
+    .card:hover {
+        box-shadow: 0px 0px 30px 1px rgba(196, 69, 250, 0.3);
+    }
+
+    /* Adjust the color of links and text */
+    a,
+    .navbar-brand,
+    .navbar-nav .nav-link,
+    .tag-cloud-link {
+        color: #fff;
+    }
+
+    /* Adjust the background color of navbar and footer */
+    .navbar,
+    #sidebar {
+        background-color: #222;
+    }
+
+    /* Adjust the text color of the navbar links on hover */
+    .navbar-nav .nav-link:hover {
+        color: #ccc;
+    }
+
+    /* Adjust the color of form placeholders */
+    ::placeholder {
+        color: #ccc;
+    }
+
+    .input {
+        background-color: #212121;
+        max-width: 190px;
+        height: 40px;
+        padding: 10px;
+        /* text-align: center; */
+        border: 1px solid #1a1a1a;
+        border-radius: 5px;
+    }
+
+    .input:focus {
+        color: rgba(196, 69, 250, 0.3);
+        background-color: #1a1a1a;
+        outline-color: rgba(196, 69, 250, 0.3);
+        box-shadow: 0px 0px 30px 3px rgba(196, 69, 250, 0.3);
+        transition: .1s;
+        transition-property: box-shadow;
+    }
+
+    .tagcloud .tag-cloud-link:hover {
+        background-color: rgba(196, 69, 250, 0.3) !important;
+    }
+
     /* Define the background color for the entire row */
     .row-background {
         background-color: #3c3c3c;
@@ -13,15 +84,10 @@ Profile
 
     /* Define the background color for the personal-information section */
     #personal-information {
-        background-color: #484848;
         border-radius: 10px;
         padding: 10px;
         margin: 5px;
         transition: box-shadow 0.3s ease-in-out;
-    }
-
-    #personal-information:hover {
-        box-shadow: 0 0 20px rgba(196, 69, 250, 0.3);
     }
 
     /* Define rounded corners for the left side of the profile section */
@@ -34,25 +100,64 @@ Profile
         color: white;
     }
 </style>
-<div class="row mx-2 my-4 justify-content-between">
+<div class="row mx-2 my-4 justify-content-between ">
     <div class="col-md-3 p-1 justify-content-center mb-2">
-        <div class="text-center">
+        <div class="text-center" style="background-color: #393939; border-radius: 9px;">
             <img src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" class="rounded-circle" alt="..."
                 height="150" width="150">
             <h4>{{request.session.first_name}} {{request.session.last_name}}</h4>
             <hr>
-            <div class="text-left" id="personal-information" style="background-color: #484848;">
+            <div class="text-left" id="personal-information">
                 <h6 class="text-center underline">Personal Information</h6>
                 <p class="m-0"><span class="font-weight-bold ">Email : </span>{{request.session.email}}</p>
                 <p class="m-0"><span class="font-weight-bold ">Mobile : </span>{{request.session.mobile}}</p>
             </div>
             <div class="d-flex justify-content-center my-5">
-                <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+                <a href="{% url 'logout' %}" class="btn btn-danger" style="margin-bottom: 9px;">Logout</a>
             </div>
         </div>
     </div>
     <div class="col-md-9 p-1">
-
+        <div class="text-left m-2">
+            Here are records from
+            <mark style="background-color: #222;">
+                <a tabindex="0" class="btn-md m-2" role="button" data-toggle="popover" data-trigger="focus"
+                    title="First Date of Month"
+                    data-content="And here's some amazing content. It's very engaging. Right?">{{start_date_of_month}}</a>
+            </mark>
+            To
+            <mark style="background-color: #222;">
+                <a tabindex="0" class="btn-md m-2" role="button" data-toggle="popover" data-trigger="focus"
+                    title="Current Date of Month"
+                    data-content="And here's some amazing content. It's very engaging. Right?">{{current_date_of_month}}</a>
+            </mark>.
+        </div>
+        <div class="row d-flex justify-content-around" style="margin: 10px;">
+            <div class="col-md-4 p-3">
+                <div class="card text-center" style="background-color: #1a1a1a;">
+                    <div class="card">
+                        <div class="card2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 p-3">
+                <div class="card text-center" style="background-color: #1a1a1a;">
+                    <div class="card">
+                        <div class="card2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 p-3">
+                <div class="card text-center" style="background-color: #1a1a1a;">
+                    <div class="card">
+                        <div class="card2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

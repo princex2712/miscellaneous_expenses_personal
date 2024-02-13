@@ -3,12 +3,14 @@ from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 
+from master.utils.ME_DATETIME.me_time import DateTimeInformation
 from master.utils.ME_UNIQUE.generate_otp import generate_otp
 from functools import wraps
 from authentication.forms import MembersForm
 from authentication.models import SuperUserModel,MembersModel
 
 # Create your views here.
+datetimeinfo = DateTimeInformation()
 
 def login_required(view_func):
     @wraps(view_func)
@@ -54,7 +56,11 @@ def members_view(request):
 
 @login_required
 def profile_view(request):
-    return render(request,'account/profile.html')
+    context = {
+        'start_date_of_month':datetimeinfo.get_startdate_of_month,
+        'current_date_of_month':datetimeinfo.get_current_date,
+    }
+    return render(request,'account/profile.html',context)
 
 
 def login_view(request):
@@ -208,6 +214,9 @@ def members_login_view(request):
                 request.session['mobile'] = getMembers.mobile
                 messages.success(request,'Login Success!')
                 return redirect('members_dashboard_view')
+            else:
+                messages.warning(request,"Invalid Password or email!")
+                return redirect('members_login_view')
     return render(request,'account/members_login.html')
 
 
@@ -215,4 +224,8 @@ def members_dashboard_view(request):
     return render(request,'account/members_dashboard.html')
 
 def members_profile_view(request):
-    return render(request,'account/members_profile.html')
+    context = {
+        'start_date_of_month':datetimeinfo.get_startdate_of_month,
+        'current_date_of_month':datetimeinfo.get_current_date,
+    }
+    return render(request,'account/members_profile.html',context)
