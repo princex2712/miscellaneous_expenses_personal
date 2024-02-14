@@ -205,27 +205,63 @@ def members_login_view(request):
             messages.warning(request,"Member Does not Exist!")
             redirect('members_login_view')
         else:
-            if password_ == getMembers.password:
-                request.session['superuser_id'] = getMembers.superuser_id_id
-                request.session['members_id'] = getMembers.id
-                request.session['first_name'] = getMembers.first_name
-                request.session['last_name'] = getMembers.last_name
-                request.session['email'] = getMembers.email
-                request.session['mobile'] = getMembers.mobile
-                messages.success(request,'Login Success!')
-                return redirect('members_dashboard_view')
+            if getMembers.is_active != False:
+                if password_ == getMembers.password:
+                    request.session['superuser_id'] = getMembers.superuser_id_id
+                    request.session['members_id'] = getMembers.id
+                    request.session['first_name'] = getMembers.first_name
+                    request.session['last_name'] = getMembers.last_name
+                    request.session['email'] = getMembers.email
+                    request.session['mobile'] = getMembers.mobile
+                    messages.success(request,'Login Success!')
+                    return redirect('members_dashboard_view')
+                else:
+                    messages.warning(request,"Invalid Password or email!")
+                    return redirect('members_login_view')
             else:
-                messages.warning(request,"Invalid Password or email!")
+                messages.warning(request,"Account is deactive Contact Your Admin!")
                 return redirect('members_login_view')
     return render(request,'account/members_login.html')
 
-
+@login_required
 def members_dashboard_view(request):
     return render(request,'account/members_dashboard.html')
 
+@login_required
 def members_profile_view(request):
     context = {
         'start_date_of_month':datetimeinfo.get_startdate_of_month,
         'current_date_of_month':datetimeinfo.get_current_date,
     }
     return render(request,'account/members_profile.html',context)
+
+@login_required
+def update_member_view(request,id):
+    getUser = MembersModel.objects.get(id=id)
+    context = {
+        'member':getUser
+    }
+    if request.method=="POST":
+        getUser.first_name = request.POST['first_name']
+        getUser.last_name = request.POST['last_name']
+        getUser.email = request.POST['email']
+        getUser.mobile = request.POST['mobile']
+        
+        if request.POST.get('is_active') == 'on':
+            is_active_ = True
+        else:
+            is_active_ = False
+
+        getUser.is_active = is_active_
+        getUser.save()
+        messages.success(request,f"{getUser.first_name} {getUser.last_name} is Updated Successfully")
+        return redirect('members_view')
+
+    return render(request,'account/update_member.html',context)
+
+@login_required
+def delete_member_view(request,id):
+    getUser = MembersModel.objects.get(id=id)
+    messages.success(request,f"{getUser.first_name} {getUser.last_name} Deleted Successfully")
+    getUser.delete()
+    return redirect("members_view")
