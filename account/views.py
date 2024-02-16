@@ -8,6 +8,7 @@ from master.utils.ME_UNIQUE.generate_otp import generate_otp
 from functools import wraps
 from authentication.forms import MembersForm
 from authentication.models import SuperUserModel,MembersModel
+from .models import IncomeModel
 
 # Create your views here.
 datetimeinfo = DateTimeInformation()
@@ -96,14 +97,13 @@ def login_view(request):
 def forgot_password_view(request):
     if request.method == "POST":
         email_ = request.POST['email']
-        
+
         try:
             getsuperuser = SuperUserModel.objects.get(email = email_)
 
         except SuperUserModel.DoesNotExist:
             messages.warning(request,'Email Not Registered Yet!')
             return redirect('login_view')
-
         else:
             if getsuperuser:
                 otp_ = generate_otp()
@@ -265,3 +265,24 @@ def delete_member_view(request,id):
     messages.success(request,f"{getUser.first_name} {getUser.last_name} Deleted Successfully")
     getUser.delete()
     return redirect("members_view")
+
+@login_required
+def income_view(request):  
+
+    if request.method == "POST":
+        member_id_ = request.POST['member']
+        date_ = request.POST['date']
+        amount_ = request.POST['income_amount']
+
+        add_income=IncomeModel.objects.create(
+            member_id_id=member_id_,
+              amount=amount_,
+                date=date_)
+        add_income.save()
+        return redirect('income_view')
+    
+    members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    context={
+        'members':members
+    }
+    return render(request,'account/income.html',context)

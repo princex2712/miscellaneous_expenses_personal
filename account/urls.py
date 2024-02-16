@@ -13,4 +13,5 @@ urlpatterns = [
     path('members_profile_view/',members_profile_view,name='members_profile_view'),
     path('update_member_view/<int:id>',update_member_view,name='update_member_view'),
     path('delete_member_view/<int:id>',delete_member_view,name='delete_member_view'),
+    path('income_view/',income_view,name='income_view'),
 ]
