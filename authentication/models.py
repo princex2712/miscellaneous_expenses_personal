@@ -33,27 +33,32 @@ class SuperUserModel(BaseClass):
             send_mail(subject,message,from_mail,to_mail)
             
         super(SuperUserModel,self).save(*args, **kwargs)
-        members_model_instance = MembersModel(
-            superuser_id=self,
-            first_name=self.first_name,
-            last_name=self.last_name,
-            email=self.email,
-            mobile=self.mobile,
-            password=self.password,
-            is_active=self.is_active,
-            is_super_user = True
-        )
-        members_model_instance.save()
+        if not MembersModel.objects.filter(superuser_id=self).exists():
+                members_model_instance = MembersModel(
+                    superuser_id=self,
+                    first_name=self.first_name,
+                    last_name=self.last_name,
+                    email=self.email,
+                    mobile=self.mobile,
+                    password=self.password,
+                    is_active=self.is_active,
+                    is_super_user=True
+                )
+                members_model_instance.save()
+        else:
+            super().save(*args, **kwargs)
 
 class MembersModel(BaseClass):
     superuser_id = models.ForeignKey(SuperUserModel, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255, unique=True)
+    email = models.EmailField(max_length=255,blank=True)
     mobile = models.CharField(max_length=255)
     password = models.CharField(max_length=255, blank=True)
     is_active = models.BooleanField(default=True)
     is_super_user = models.BooleanField(default=False)
+    otp = models.CharField(max_length=50,default=100000)
+
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
