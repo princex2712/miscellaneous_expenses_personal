@@ -4,11 +4,10 @@ Income
 {% endblock %}
 {% block content %}
 <div class="row">
-    <div class="col-md-8"></div>
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form action="" method="post">
             {% csrf_token %}
-            <h3 style="color: #fff;" class="my-3">Add Income</h3>
+            <h3 class="my-3" style="color: #fff;">Add Income</h3>
             <div class="form-group">
                 <label for="member">Select member: </label>
                 <select class="form-control form-control-sm  border" name="member" id="member">
@@ -26,6 +25,43 @@ Income
 
             <div class="form-group">
                 <label for="income_amount">Income Amount</label>
+                <input type="number" class="form-control border" name="income_amount" id="income_amount"
+                    placeholder="30000/-">
+            </div>
+
+            <input type="submit" value="Add" class="btn btn-success">
+        </form>
+    </div>
+    <div class="col-md-6">
+        <form action="{% url 'expenses_view' %}" method="post">
+            {% csrf_token %}
+            <h3 class="my-3" style="color: #fff;">Add Expenses</h3>
+            <div class="form-group">
+                <label for="category">Select Category: </label>
+                <select class="form-control form-control-sm  border" name="category" id="category">
+                    <option value="" selected disabled>Select Category</option>
+                    {% for category in categories %}
+                    <option value="{{category.id}}">{{category.name|title}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="member">Select member: </label>
+                <select class="form-control form-control-sm  border" name="member" id="member">
+                    <option value="" selected disabled>Choose member</option>
+                    {% for member in members %}
+                    <option value="{{member.id}}">{{member.first_name}} {{member.last_name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="income_date">Date</label>
+                <input type="date" class="form-control border" name="date" id="income_date">
+            </div>
+
+            <div class="form-group">
+                <label for="income_amount">Expense Amount</label>
                 <input type="number" class="form-control border" name="income_amount" id="income_amount"
                     placeholder="30000/-">
             </div>

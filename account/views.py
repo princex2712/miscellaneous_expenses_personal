@@ -2,13 +2,14 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db.models import Sum
 
 from master.utils.ME_DATETIME.me_time import DateTimeInformation
 from master.utils.ME_UNIQUE.generate_otp import generate_otp
 from functools import wraps
 from authentication.forms import MembersForm
 from authentication.models import MembersModel,SuperUserModel
-from .models import IncomeModel
+from .models import IncomeModel,Category,Expenses
 
 # Create your views here.
 datetimeinfo = DateTimeInformation()
@@ -57,9 +58,22 @@ def members_view(request):
 
 @login_required
 def profile_view(request):
+    getmembers = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    start_date_of_month=datetimeinfo.get_startdate_of_month()
+    current_date_of_month=datetimeinfo.get_current_date()
+    total_income = 0
+    for member in getmembers:
+        get_income = IncomeModel.objects.filter(member_id_id=member.id).filter(
+            date__range=[
+                datetimeinfo.convert_date_format(start_date_of_month),
+                datetimeinfo.convert_date_format(current_date_of_month)
+                ])
+        total_amount = get_income.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+        total_income += total_amount
     context = {
-        'start_date_of_month':datetimeinfo.get_startdate_of_month,
-        'current_date_of_month':datetimeinfo.get_current_date,
+        'start_date_of_month':start_date_of_month,
+        'current_date_of_month':current_date_of_month,
+        'total_income':total_income
     }
     return render(request,'account/profile.html',context)
 
@@ -230,9 +244,22 @@ def members_dashboard_view(request):
 
 @login_required
 def members_profile_view(request):
+    getmembers = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    start_date_of_month=datetimeinfo.get_startdate_of_month()
+    current_date_of_month=datetimeinfo.get_current_date()
+    total_income = 0
+    for member in getmembers:
+        get_income = IncomeModel.objects.filter(member_id_id=member.id).filter(
+            date__range=[
+                datetimeinfo.convert_date_format(start_date_of_month),
+                datetimeinfo.convert_date_format(current_date_of_month)
+                ])
+        total_amount = get_income.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+        total_income += total_amount
     context = {
-        'start_date_of_month':datetimeinfo.get_startdate_of_month,
-        'current_date_of_month':datetimeinfo.get_current_date,
+        'start_date_of_month':start_date_of_month,
+        'current_date_of_month':current_date_of_month,
+        'total_income':total_income
     }
     return render(request,'account/members_profile.html',context)
 
@@ -283,8 +310,10 @@ def income_view(request):
         return redirect('income_view')
     
     members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    categories = Category.objects.filter(superuser_id_id=request.session['superuser_id'])
     context={
-        'members':members
+        'members':members,
+        'categories':categories
     }
     return render(request,'account/income.html',context)
 
@@ -303,7 +332,25 @@ def members_income_view(request):
         return redirect('members_income_view')
     
     members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    categories = Category.objects.filter(superuser_id_id=request.session['superuser_id'])
     context={
-        'members':members
+        'members':members,
+        'categories':categories
     }
     return render(request,'account/members_income.html',context)
+
+def expenses_view(request):
+    if request.method=='POST':
+        date_ = request.POST['date']
+        amount_ = request.POST['income_amount']
+        description_ = request.POST['description']
+        member_id=request.POST['member']
+        category_id=request.POST['category']
+        try:
+            new_expense = Expenses(date=date_,amount=amount_,description=description_,member_id_id=member_id,category_id_id=category_id)
+            new_expense.save()
+        except Exception as e:
+            return redirect('profile_view')
+        
+    
+    return render(request, 'account/income.html')

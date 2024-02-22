@@ -15,4 +15,5 @@ urlpatterns = [
     path('delete_member_view/<int:id>',delete_member_view,name='delete_member_view'),
     path('income_view/',income_view,name='income_view'),
     path('members_income_view/',members_income_view,name='members_income_view'),
+    path('expenses_view/',expenses_view,name='expenses_view'),
 ]

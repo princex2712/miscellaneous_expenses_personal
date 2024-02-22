@@ -63,3 +63,9 @@ class DateTimeInformation(CurrentDateTime):
         """
         start_date_of_month = datetime.now().replace(day=1).strftime('%d-%m-%Y')
         return start_date_of_month
+    
+    def convert_date_format(self,date_str):
+        # Parse the date string and convert it to "YYYY-MM-DD" format
+        parsed_date = datetime.strptime(date_str, "%d-%m-%Y").date()
+        converted_date_str = parsed_date.strftime("%Y-%m-%d")
+        return converted_date_str
