@@ -73,4 +73,54 @@ Income
         </form>
     </div>
 </div>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table border" style="margin-top: 20px;color: #fff ;">
+            <thead class="thead-dark">
+                <h3 class="my-3" style="color: #fff;">Income Data</h3>
+                <tr>
+                    <th scope="col">Member Name</th>
+                    <th scope="col">Income</th>
+                    <th scope="col">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for income in get_income %}
+                <tr>
+                    <td>{{ income }}</td>
+                    <td>{{ income.amount }}</td>
+                    <td>{{ income.date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table border" style="margin-top: 20px;color: #fff ;">
+            <thead class="thead-dark">
+                <h3 class="my-3" style="color: #fff;">Expenses Data</h3>
+                <tr>
+                    <th scope="col">Member Name</th>
+                    <th scope="col">Expense</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expenses in get_expenses %}
+                <tr>
+                    <td>{{ expenses.member_id }}</td>
+                    <td>{{ expenses.amount }}</td>
+                    <td>{{ expenses.date }}</td>
+                    <td>{{ expenses.category_id }}</td>
+                    <td>{{ expenses.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

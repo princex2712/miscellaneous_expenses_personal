@@ -11,7 +11,7 @@ from authentication.forms import MembersForm
 from authentication.models import MembersModel,SuperUserModel
 from .models import IncomeModel,Category,Expenses
 
-# Create your views here.
+
 datetimeinfo = DateTimeInformation()
 
 def login_required(view_func):
@@ -25,10 +25,15 @@ def login_required(view_func):
 
 @login_required
 def dashboard_view(request):
-    return render(request, 'account/dashboard.html')
+    user = MembersModel.objects.get(email = request.session['email'])
+    context = {
+        'user':user
+    }
+    return render(request, 'account/dashboard.html',context)
 
 @login_required
 def members_view(request):
+    user = MembersModel.objects.get(email = request.session['email'])
     form = MembersForm()
     if request.method == 'POST':
         try:
@@ -37,6 +42,9 @@ def members_view(request):
             email_ = request.POST.get('email')
             mobile_ = request.POST.get('mobile')
             is_active_ = request.POST.get('is_active')
+            if MembersModel.objects.filter(email=email_).exists():
+                messages.warning(request,'Email Already Taken!')
+                return redirect('members_view')
         except Exception as e:
             print(e)
         else:
@@ -52,13 +60,15 @@ def members_view(request):
     members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
     context = {
         'form': form,
-        'members':members
+        'members':members,
+        'user':user
     }
     return render(request,'account/members.html',context)
 
 @login_required
 def profile_view(request):
     getmembers = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    user = MembersModel.objects.get(email=request.session['email'])
     start_date_of_month=datetimeinfo.get_startdate_of_month()
     current_date_of_month=datetimeinfo.get_current_date()
     total_income = 0
@@ -73,39 +83,10 @@ def profile_view(request):
     context = {
         'start_date_of_month':start_date_of_month,
         'current_date_of_month':current_date_of_month,
-        'total_income':total_income
+        'total_income':total_income,
+        'user':user
     }
     return render(request,'account/profile.html',context)
-
-
-def login_view(request):
-    if request.method == "POST":
-        email_ = request.POST['email']
-        password_ = request.POST['password']
-        try:
-            getmemberuser = SuperUserModel.objects.get(email = email_)
-        except SuperUserModel.DoesNotExist:
-            messages.info(request,'User Does Not Exists')
-            redirect('login_view')
-        else:
-            if getmemberuser:
-                if getmemberuser.password == password_:
-                    request.session['superuser_id'] = getmemberuser.id
-                    request.session['email'] = getmemberuser.email
-                    request.session['first_name'] = getmemberuser.first_name
-                    request.session['last_name'] = getmemberuser.last_name
-                    request.session['mobile'] = getmemberuser.mobile
-                    messages.success(request,'Login Success')
-                    return redirect('dashboard_view')
-                else:
-                    messages.warning(request,'Email and Password does not match')
-                    return redirect('login_view')
-            else:
-                messages.info(request,'User Not Exist')
-                return redirect('login_view')
-    if 'email' in request.session:
-        return redirect('dashboard_view')
-    return render(request,'account/login.html')
 
 
 def forgot_password_view(request):
@@ -207,9 +188,7 @@ def logout(request):
     messages.success(request,'Logged Out Success')
     return redirect('login_view')
 
-
-
-def members_login_view(request):
+def login_view(request):
     if request.method == "POST":
         email_ = request.POST['email']
         password_ = request.POST['password']
@@ -218,7 +197,7 @@ def members_login_view(request):
             getMembers = MembersModel.objects.get(email = email_)
         except MembersModel.DoesNotExist:
             messages.warning(request,"Member Does not Exist!")
-            redirect('members_login_view')
+            redirect('login_view')
         else:
             if getMembers.is_active != False:
                 if password_ == getMembers.password:
@@ -229,39 +208,14 @@ def members_login_view(request):
                     request.session['email'] = getMembers.email
                     request.session['mobile'] = getMembers.mobile
                     messages.success(request,'Login Success!')
-                    return redirect('members_dashboard_view')
+                    return redirect('dashboard_view')
                 else:
                     messages.warning(request,"Invalid Password or email!")
-                    return redirect('members_login_view')
+                    return redirect('login_view')
             else:
                 messages.warning(request,"Account is deactive Contact Your Admin!")
-                return redirect('members_login_view')
-    return render(request,'account/members_login.html')
-
-@login_required
-def members_dashboard_view(request):
-    return render(request,'account/members_dashboard.html')
-
-@login_required
-def members_profile_view(request):
-    getmembers = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
-    start_date_of_month=datetimeinfo.get_startdate_of_month()
-    current_date_of_month=datetimeinfo.get_current_date()
-    total_income = 0
-    for member in getmembers:
-        get_income = IncomeModel.objects.filter(member_id_id=member.id).filter(
-            date__range=[
-                datetimeinfo.convert_date_format(start_date_of_month),
-                datetimeinfo.convert_date_format(current_date_of_month)
-                ])
-        total_amount = get_income.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
-        total_income += total_amount
-    context = {
-        'start_date_of_month':start_date_of_month,
-        'current_date_of_month':current_date_of_month,
-        'total_income':total_income
-    }
-    return render(request,'account/members_profile.html',context)
+                return redirect('login_view')
+    return render(request,'account/login.html')
 
 @login_required
 def update_member_view(request,id):
@@ -296,13 +250,14 @@ def delete_member_view(request,id):
 
 @login_required
 def income_view(request):  
-
+    user = MembersModel.objects.get(email = request.session['email'])
     if request.method == "POST":
         member_id_ = request.POST['member']
         date_ = request.POST['date']
         amount_ = request.POST['income_amount']
 
         add_income=IncomeModel.objects.create(
+            superuser_id_id=request.session['superuser_id'],
             member_id_id=member_id_,
               amount=amount_,
                 date=date_)
@@ -310,10 +265,15 @@ def income_view(request):
         return redirect('income_view')
     
     members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
-    categories = Category.objects.filter(superuser_id_id=request.session['superuser_id'])
+    categories = Category.objects.all()
+    get_income= IncomeModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    get_expenses = Expenses.objects.filter(superuser_id_id=request.session['superuser_id'])
     context={
         'members':members,
-        'categories':categories
+        'categories':categories,
+        'get_income':get_income,
+        'get_expenses':get_expenses,
+        'user':user
     }
     return render(request,'account/income.html',context)
 
@@ -332,10 +292,14 @@ def members_income_view(request):
         return redirect('members_income_view')
     
     members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
-    categories = Category.objects.filter(superuser_id_id=request.session['superuser_id'])
+    categories = Category.objects.all()
+    get_income= IncomeModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    get_expenses = Expenses.objects.filter(superuser_id_id=request.session['superuser_id'])
     context={
         'members':members,
-        'categories':categories
+        'categories':categories,
+        'get_income':get_income,
+        'get_expenses':get_expenses
     }
     return render(request,'account/members_income.html',context)
 
@@ -346,11 +310,10 @@ def expenses_view(request):
         description_ = request.POST['description']
         member_id=request.POST['member']
         category_id=request.POST['category']
+        superuser_id_=request.session['superuser_id']
         try:
-            new_expense = Expenses(date=date_,amount=amount_,description=description_,member_id_id=member_id,category_id_id=category_id)
+            new_expense = Expenses(superuser_id_id=superuser_id_,date=date_,amount=amount_,description=description_,member_id_id=member_id,category_id_id=category_id)
             new_expense.save()
         except Exception as e:
             return redirect('profile_view')
-        
-    
     return render(request, 'account/income.html')
