@@ -24,4 +24,4 @@ class Expenses(BaseClass):
     member_id = models.ForeignKey(MembersModel,on_delete=models.CASCADE)
     date = models.DateField()
     amount = models.DecimalField(default=0,decimal_places=2,max_digits=10)
-    description = models.TextField(blank=True)
+    description = models.TextField(default="--")

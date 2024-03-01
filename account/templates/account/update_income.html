@@ -1,0 +1,39 @@
+{% extends 'account/base.html' %}
+{% block title %}
+Update Income
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md">
+        <form action="" method="post">
+            {% csrf_token %}
+            <h3 class="my-3">Update Income</h3>
+            <div class="form-group">
+                <label for="member">Select member: </label>
+                <select class="form-control form-control-sm  border" name="member" id="member" required>
+                    <option value="" selected disabled>
+                        Choose member
+                    </option>
+                    {% for member in members %}
+                    <option value="{{member.id}}">{{member.first_name}} {{member.last_name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="income_date">Date</label>
+                <input type="date" class="form-control border" name="date" id="income_date" value="{{ income.date }}"
+                    required>
+            </div>
+
+
+            <div class=" form-group">
+                <label for="income_amount">Income Amount</label>
+                <input type="number" class="form-control border" name="income_amount" id="income_amount"
+                    value="{{income.amount}}">
+            </div>
+
+            <input type="submit" value="Update" class="btn btn-success">
+        </form>
+    </div>
+    {% endblock %}

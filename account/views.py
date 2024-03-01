@@ -1,18 +1,24 @@
+from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Sum
 
+import openpyxl
+
 from master.utils.ME_DATETIME.me_time import DateTimeInformation
 from master.utils.ME_UNIQUE.generate_otp import generate_otp
+from master.utils.ME_REPORT.me_report import IncomeExpense
 from functools import wraps
 from authentication.forms import MembersForm
-from authentication.models import MembersModel,SuperUserModel
+from authentication.models import MembersModel
 from .models import IncomeModel,Category,Expenses
 
-
+# creating object to use classes 
 datetimeinfo = DateTimeInformation()
+start_date_of_month=datetimeinfo.get_startdate_of_month()
+current_date_of_month=datetimeinfo.get_current_date()
 
 def login_required(view_func):
     @wraps(view_func)
@@ -69,9 +75,8 @@ def members_view(request):
 def profile_view(request):
     getmembers = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
     user = MembersModel.objects.get(email=request.session['email'])
-    start_date_of_month=datetimeinfo.get_startdate_of_month()
-    current_date_of_month=datetimeinfo.get_current_date()
     total_income = 0
+    total_expense = 0
     for member in getmembers:
         get_income = IncomeModel.objects.filter(member_id_id=member.id).filter(
             date__range=[
@@ -80,11 +85,22 @@ def profile_view(request):
                 ])
         total_amount = get_income.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
         total_income += total_amount
+
+        get_expense = Expenses.objects.filter(member_id_id=member.id).filter(
+            date__range=[
+                datetimeinfo.convert_date_format(start_date_of_month),
+                datetimeinfo.convert_date_format(current_date_of_month)
+                ])
+        total_amount = get_expense.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+        total_expense += total_amount
+    remaining_amount = total_income - total_expense
     context = {
         'start_date_of_month':start_date_of_month,
         'current_date_of_month':current_date_of_month,
         'total_income':total_income,
-        'user':user
+        'user':user,
+        'total_expense':total_expense,
+        'remaining_amount':remaining_amount
     }
     return render(request,'account/profile.html',context)
 
@@ -266,8 +282,8 @@ def income_view(request):
     
     members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
     categories = Category.objects.all()
-    get_income= IncomeModel.objects.filter(superuser_id_id=request.session['superuser_id'])
-    get_expenses = Expenses.objects.filter(superuser_id_id=request.session['superuser_id'])
+    get_income= IncomeModel.objects.filter(superuser_id_id=request.session['superuser_id']).filter(date__range=[datetimeinfo.convert_date_format(start_date_of_month),datetimeinfo.convert_date_format(current_date_of_month)])
+    get_expenses = Expenses.objects.filter(superuser_id_id=request.session['superuser_id']).filter(date__range=[datetimeinfo.convert_date_format(start_date_of_month),datetimeinfo.convert_date_format(current_date_of_month)])
     context={
         'members':members,
         'categories':categories,
@@ -276,32 +292,6 @@ def income_view(request):
         'user':user
     }
     return render(request,'account/income.html',context)
-
-@login_required
-def members_income_view(request):
-    if request.method == "POST":
-        member_id_ = request.POST['member']
-        date_ = request.POST['date']
-        amount_ = request.POST['income_amount']
-
-        add_income=IncomeModel.objects.create(
-            member_id_id=member_id_,
-                amount=amount_,
-                date=date_)
-        add_income.save()
-        return redirect('members_income_view')
-    
-    members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
-    categories = Category.objects.all()
-    get_income= IncomeModel.objects.filter(superuser_id_id=request.session['superuser_id'])
-    get_expenses = Expenses.objects.filter(superuser_id_id=request.session['superuser_id'])
-    context={
-        'members':members,
-        'categories':categories,
-        'get_income':get_income,
-        'get_expenses':get_expenses
-    }
-    return render(request,'account/members_income.html',context)
 
 def expenses_view(request):
     if request.method=='POST':
@@ -314,6 +304,129 @@ def expenses_view(request):
         try:
             new_expense = Expenses(superuser_id_id=superuser_id_,date=date_,amount=amount_,description=description_,member_id_id=member_id,category_id_id=category_id)
             new_expense.save()
+            return redirect('income_view')
         except Exception as e:
             return redirect('profile_view')
     return render(request, 'account/income.html')
+
+def update_income_view(request,id):
+    getIncome = IncomeModel.objects.get(id=id)
+    getmember = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    user = MembersModel.objects.get(email = request.session['email'])
+    if request.method=="POST":
+        getIncome.date = request.POST['date']
+        getIncome.amount = request.POST['income_amount']
+        getIncome.member_id_id = request.POST['member']
+        getIncome.save()
+        messages.success(request,"Income Update Successfully!")
+        return redirect('income_view')
+    context = {
+        'income':getIncome,
+        'user':user,
+        'members':getmember
+    }
+    return render(request,'account/update_income.html',context)
+
+def delete_income_view(request,id):
+    getIncome = IncomeModel.objects.get(id=id)
+    getIncome.delete()
+    messages.success(request,"Income Deleted Successfully!")
+    return redirect('income_view')
+
+def update_expense_view(request,id):
+    getexpense = Expenses.objects.get(id=id)
+    getmember = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    categories = Category.objects.all()
+
+    if request.method == "POST":
+        getexpense.member_id_id = request.POST['member']
+        getexpense.category_id_id = request.POST['category']
+        getexpense.date = request.POST['date']
+        getexpense.amount = request.POST['expense_amount']
+        getexpense.description = request.POST['description']
+        getexpense.save()
+        messages.success(request,"Expense Update Successfully!")
+        return redirect('income_view')
+    context = {
+        'getexpense':getexpense,
+        'members':getmember,
+        'categories':categories
+    }
+    return render(request,'account/update_expense.html',context)
+
+def delete_expense_view(request,id):
+    getexpense = Expenses.objects.get(id=id)
+    getexpense.delete()
+    messages.success(request,"Expense Deleted Successfully!")
+    return redirect('income_view')
+
+
+def download_income_report(request):
+    ie = IncomeExpense(request.session['superuser_id'])
+    member_income_list = []
+    total_income = ie.current_total_income()
+    for member in ie.getmember:
+        member_income = IncomeModel.objects.filter(member_id_id=member.id).filter(date__range=[datetimeinfo.convert_date_format(start_date_of_month),datetimeinfo.convert_date_format(current_date_of_month)])
+        if member_income.exists():
+            member_income_list.append({'incomes':member_income})
+    
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = 'Income Report'
+
+    # Headers
+    worksheet.append(['Member Name', 'Income Date', 'Total Income'])
+
+    # Data rows
+    for record in member_income_list:
+        incomes_queryset = record['incomes']
+        for income_instance in incomes_queryset:
+            worksheet.append([income_instance.member_id.first_name + ' ' + income_instance.member_id.last_name, income_instance.date,  income_instance.amount])
+
+    worksheet.append(['Total', '', total_income])
+
+    # Create response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename=income_report.xlsx'
+
+    # Save workbook to response
+    workbook.save(response)
+
+    return response
+
+def download_expense_report(request):
+    ie = IncomeExpense(request.session['superuser_id'])
+    total_expense = ie.current_total_expense()
+    member_expense_list = []
+    for member in ie.getmember:
+        member_expense = Expenses.objects.filter(member_id_id=member.id).filter(date__range=[datetimeinfo.convert_date_format(start_date_of_month),datetimeinfo.convert_date_format(current_date_of_month)])
+        if member_expense.exists():
+            member_expense_list.append({'expenses':member_expense})
+    
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = 'Expense Report'
+
+    # Headers
+    worksheet.append(['Member Name', 'Expense Date', 'Category' , 'Expense'])
+
+    # Data rows
+    for record in member_expense_list:
+        incomes_queryset = record['expenses']
+        for expense_instance in incomes_queryset:
+            worksheet.append([expense_instance.member_id.first_name + ' ' + expense_instance.member_id.last_name, expense_instance.date,expense_instance.category_id.name,expense_instance.amount])
+
+    worksheet.append(['Total', '','', total_expense])
+
+    # Create response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename=expense_report.xlsx'
+
+    # Save workbook to response
+    workbook.save(response)
+
+    return response
+    
+    
+
+

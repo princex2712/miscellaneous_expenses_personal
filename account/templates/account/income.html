@@ -10,7 +10,7 @@ Income
             <h3 class="my-3">Add Income</h3>
             <div class="form-group">
                 <label for="member">Select member: </label>
-                <select class="form-control form-control-sm  border" name="member" id="member">
+                <select class="form-control form-control-sm  border" name="member" id="member" required>
                     <option value="" selected disabled>Choose member</option>
                     {% for member in members %}
                     <option value="{{member.id}}">{{member.first_name}} {{member.last_name}}</option>
@@ -20,13 +20,13 @@ Income
 
             <div class="form-group">
                 <label for="income_date">Date</label>
-                <input type="date" class="form-control border" name="date" id="income_date">
+                <input type="date" class="form-control border" name="date" id="income_date" required>
             </div>
 
             <div class="form-group">
                 <label for="income_amount">Income Amount</label>
                 <input type="number" class="form-control border" name="income_amount" id="income_amount"
-                    placeholder="30000/-">
+                    placeholder="30000/-" required>
             </div>
 
             <input type="submit" value="Add" class="btn btn-success">
@@ -38,7 +38,7 @@ Income
             <h3 class="my-3">Add Expenses</h3>
             <div class="form-group">
                 <label for="category">Select Category: </label>
-                <select class="form-control form-control-sm  border" name="category" id="category">
+                <select class="form-control form-control-sm  border" name="category" id="category" required>
                     <option value="" selected disabled>Select Category</option>
                     {% for category in categories %}
                     <option value="{{category.id}}">{{category.name|title}}</option>
@@ -47,7 +47,7 @@ Income
             </div>
             <div class="form-group">
                 <label for="member">Select member: </label>
-                <select class="form-control form-control-sm  border" name="member" id="member">
+                <select class="form-control form-control-sm  border" name="member" id="member" required>
                     <option value="" selected disabled>Choose member</option>
                     {% for member in members %}
                     <option value="{{member.id}}">{{member.first_name}} {{member.last_name}}</option>
@@ -57,13 +57,13 @@ Income
 
             <div class="form-group">
                 <label for="income_date">Date</label>
-                <input type="date" class="form-control border" name="date" id="income_date">
+                <input type="date" class="form-control border" name="date" id="income_date" required>
             </div>
 
             <div class="form-group">
                 <label for="income_amount">Expense Amount</label>
                 <input type="number" class="form-control border" name="income_amount" id="income_amount"
-                    placeholder="30000/-">
+                    placeholder="30000/-" required>
             </div>
             <div class="form-group">
                 <label for="description">Description</label>
@@ -82,16 +82,30 @@ Income
                     <th scope="col">Member Name</th>
                     <th scope="col">Income</th>
                     <th scope="col">Date</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
+                {% if get_income|length != 0 %}
                 {% for income in get_income %}
                 <tr>
                     <td>{{ income }}</td>
                     <td>{{ income.amount }}</td>
                     <td>{{ income.date }}</td>
+                    <td>
+                        <a href="{% url 'update_income_view' id=income.id %}"><i class="fa fa-pencil-square-o fa-2x "
+                                aria-hidden="true"></i></a>
+                        <a href="{% url 'delete_income_view' id=income.id %}"><i class="fa fa-trash-o fa-2x ml-2"
+                                aria-hidden="true"></i></a>
+                    </td>
                 </tr>
                 {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center;">No Member Income</td>
+                </tr>
+                {% endif %}
+
             </tbody>
         </table>
     </div>
@@ -107,9 +121,11 @@ Income
                     <th scope="col">Date</th>
                     <th scope="col">Category</th>
                     <th scope="col">Description</th>
+                    <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
+                {% if get_expenses|length != 0 %}
                 {% for expenses in get_expenses %}
                 <tr>
                     <td>{{ expenses.member_id }}</td>
@@ -117,8 +133,19 @@ Income
                     <td>{{ expenses.date }}</td>
                     <td>{{ expenses.category_id }}</td>
                     <td>{{ expenses.description }}</td>
+                    <td>
+                        <a href="{% url 'update_expense_view' id=expenses.id%}"><i class="fa fa-pencil-square-o fa-2x "
+                                aria-hidden="true"></i></a>
+                        <a href="{% url 'delete_expense_view' id=expenses.id%}"><i class="fa fa-trash-o fa-2x ml-2"
+                                aria-hidden="true"></i></a>
+                    </td>
                 </tr>
                 {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">No Member Expense</td>
+                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
