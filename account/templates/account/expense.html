@@ -1,13 +1,22 @@
 {% extends 'account\base.html' %}
 {% block title %}
-Income
+Expense
 {% endblock %}
 {% block content %}
 <div class="row">
     <div class="col-md">
-        <form action="" method="post">
+        <form action="{% url 'expenses_view' %}" method="post">
             {% csrf_token %}
-            <h3 class="my-3">Add Income</h3>
+            <h3 class="my-3">Add Expenses</h3>
+            <div class="form-group">
+                <label for="category">Select Category: </label>
+                <select class="form-control form-control-sm  border" name="category" id="category" required>
+                    <option value="" selected disabled>Select Category</option>
+                    {% for category in categories %}
+                    <option value="{{category.id}}">{{category.name|title}}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <div class="form-group">
                 <label for="member">Select member: </label>
                 <select class="form-control form-control-sm  border" name="member" id="member" required>
@@ -24,11 +33,14 @@ Income
             </div>
 
             <div class="form-group">
-                <label for="income_amount">Income Amount</label>
+                <label for="income_amount">Expense Amount</label>
                 <input type="number" class="form-control border" name="income_amount" id="income_amount"
                     placeholder="30000/-" required>
             </div>
-
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" class="form-control" name="description" id="description" placeholder="At hotel...">
+            </div>
             <input type="submit" value="Add" class="btn btn-success">
         </form>
     </div>
@@ -37,37 +49,41 @@ Income
     <div class="col-md-12">
         <table class="table border" style="margin-top: 20px;color: #fff ;">
             <thead class="thead-dark">
-                <h3 class="my-3" style="color: #fff;">Income Data</h3>
+                <h3 class="my-3" style="color: #fff;">Expenses Data</h3>
                 <tr>
                     <th scope="col">Member Name</th>
-                    <th scope="col">Income</th>
+                    <th scope="col">Expense</th>
                     <th scope="col">Date</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Description</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% if get_income|length != 0 %}
-                {% for income in get_income %}
+                {% if get_expenses|length != 0 %}
+                {% for expenses in get_expenses %}
                 <tr>
-                    <td>{{ income }}</td>
-                    <td>{{ income.amount}}</td>
-                    <td>{{ income.date }}</td>
+                    <td>{{ expenses.member_id }}</td>
+                    <td>{{ expenses.amount }}</td>
+                    <td>{{ expenses.date }}</td>
+                    <td>{{ expenses.category_id }}</td>
+                    <td>{{ expenses.description }}</td>
                     <td>
-                        <a href="{% url 'update_income_view' id=income.id %}"><i class="fa fa-pencil-square-o fa-2x "
+                        <a href="{% url 'update_expense_view' id=expenses.id%}"><i class="fa fa-pencil-square-o fa-2x "
                                 aria-hidden="true"></i></a>
-                        <a href="{% url 'delete_income_view' id=income.id %}"><i class="fa fa-trash-o fa-2x ml-2"
+                        <a href="{% url 'delete_expense_view' id=expenses.id%}"><i class="fa fa-trash-o fa-2x ml-2"
                                 aria-hidden="true"></i></a>
                     </td>
                 </tr>
                 {% endfor %}
                 {% else %}
                 <tr>
-                    <td colspan="4" style="text-align: center;">No Member Income</td>
+                    <td colspan="6" style="text-align: center;">No Member Expense</td>
                 </tr>
                 {% endif %}
-
             </tbody>
         </table>
     </div>
 </div>
+
 {% endblock %}

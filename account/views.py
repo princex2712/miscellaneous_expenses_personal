@@ -10,6 +10,7 @@ import openpyxl
 from master.utils.ME_DATETIME.me_time import DateTimeInformation
 from master.utils.ME_UNIQUE.generate_otp import generate_otp
 from master.utils.ME_REPORT.me_report import IncomeExpense
+from master.utils.ME_FORMAT.format_amount import format_amount
 from functools import wraps
 from authentication.forms import MembersForm
 from authentication.models import MembersModel
@@ -32,11 +33,26 @@ def login_required(view_func):
 @login_required
 def dashboard_view(request):
     user = MembersModel.objects.get(email = request.session['email'])
+    unique_category_names = Category.objects.filter(expenses__superuser_id=request.session['superuser_id']).values_list('id','name').distinct()
     context = {
-        'user':user
+        'user':user,
+        'unique_category_names':unique_category_names
     }
     return render(request, 'account/dashboard.html',context)
 
+@login_required
+def get_record_via_filter(request,category_id):
+    getmember = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    ExpensesRecord = []
+    for member in getmember:
+        getExpense = Expenses.objects.filter(member_id_id=member.id).filter(category_id_id = category_id).filter(date__range=[datetimeinfo.convert_date_format(start_date_of_month),datetimeinfo.convert_date_format(current_date_of_month)])
+        if getExpense.exists():
+            ExpensesRecord.append(getExpense)
+            print(getExpense)
+    # context = {
+    #     'ExpensesRecord':ExpensesRecord
+    # }
+    return redirect('dashboard_view')
 @login_required
 def members_view(request):
     user = MembersModel.objects.get(email = request.session['email'])
@@ -97,10 +113,10 @@ def profile_view(request):
     context = {
         'start_date_of_month':start_date_of_month,
         'current_date_of_month':current_date_of_month,
-        'total_income':total_income,
+        'total_income':format_amount(total_income),
         'user':user,
-        'total_expense':total_expense,
-        'remaining_amount':remaining_amount
+        'total_expense':format_amount(total_expense),
+        'remaining_amount':format_amount(remaining_amount)
     }
     return render(request,'account/profile.html',context)
 
@@ -281,19 +297,20 @@ def income_view(request):
         return redirect('income_view')
     
     members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
-    categories = Category.objects.all()
     get_income= IncomeModel.objects.filter(superuser_id_id=request.session['superuser_id']).filter(date__range=[datetimeinfo.convert_date_format(start_date_of_month),datetimeinfo.convert_date_format(current_date_of_month)])
-    get_expenses = Expenses.objects.filter(superuser_id_id=request.session['superuser_id']).filter(date__range=[datetimeinfo.convert_date_format(start_date_of_month),datetimeinfo.convert_date_format(current_date_of_month)])
     context={
         'members':members,
-        'categories':categories,
         'get_income':get_income,
-        'get_expenses':get_expenses,
         'user':user
     }
     return render(request,'account/income.html',context)
 
+@login_required
 def expenses_view(request):
+    user = MembersModel.objects.get(email = request.session['email'])
+    categories = Category.objects.all()
+    members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+    get_expenses = Expenses.objects.filter(superuser_id_id=request.session['superuser_id']).filter(date__range=[datetimeinfo.convert_date_format(start_date_of_month),datetimeinfo.convert_date_format(current_date_of_month)])
     if request.method=='POST':
         date_ = request.POST['date']
         amount_ = request.POST['income_amount']
@@ -304,10 +321,16 @@ def expenses_view(request):
         try:
             new_expense = Expenses(superuser_id_id=superuser_id_,date=date_,amount=amount_,description=description_,member_id_id=member_id,category_id_id=category_id)
             new_expense.save()
-            return redirect('income_view')
+            return redirect('expenses_view')
         except Exception as e:
             return redirect('profile_view')
-    return render(request, 'account/income.html')
+    context = {
+        'user':user,
+        'categories':categories,
+        'get_expenses':get_expenses,
+        'members':members
+    }
+    return render(request, 'account/expense.html',context)
 
 def update_income_view(request,id):
     getIncome = IncomeModel.objects.get(id=id)
@@ -337,7 +360,7 @@ def update_expense_view(request,id):
     getexpense = Expenses.objects.get(id=id)
     getmember = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
     categories = Category.objects.all()
-
+    
     if request.method == "POST":
         getexpense.member_id_id = request.POST['member']
         getexpense.category_id_id = request.POST['category']
@@ -354,11 +377,15 @@ def update_expense_view(request,id):
     }
     return render(request,'account/update_expense.html',context)
 
-def delete_expense_view(request,id):
-    getexpense = Expenses.objects.get(id=id)
-    getexpense.delete()
-    messages.success(request,"Expense Deleted Successfully!")
-    return redirect('income_view')
+def delete_expense_view(request, id):
+    try:
+        getexpense = Expenses.objects.get(id=id)
+        getexpense.delete()
+        messages.success(request, "Expense Deleted Successfully!")
+    except Expenses.DoesNotExist:
+        messages.error(request, "Expense does not exist!")
+    
+    return redirect('expenses_view')
 
 
 def download_income_report(request):

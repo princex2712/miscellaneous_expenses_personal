@@ -17,5 +17,6 @@ urlpatterns = [
     path('update_expense_view/<int:id>', update_expense_view, name='update_expense_view'),
     path('delete_expense_view/<int:id>', delete_expense_view, name='delete_expense_view'),
     path('income_report/',download_income_report,name='download_income_report'),
-    path('expense_report/',download_expense_report,name='download_expense_report')
+    path('expense_report/',download_expense_report,name='download_expense_report'),
+    path('get_record_via_filter/<int:category_id>',get_record_via_filter,name='get_record_via_filter')
 ]

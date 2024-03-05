@@ -25,3 +25,6 @@ class Expenses(BaseClass):
     date = models.DateField()
     amount = models.DecimalField(default=0,decimal_places=2,max_digits=10)
     description = models.TextField(default="--")
+
+    def __str__(self):
+        return f"{self.member_id.first_name} {self.member_id.last_name} - {self.category_id.name} [ {self.amount} ]"

@@ -22,10 +22,8 @@ Update Income
 
             <div class="form-group">
                 <label for="income_date">Date</label>
-                <input type="date" class="form-control border" name="date" id="income_date" value="{{ income.date }}"
-                    required>
+                <input type="date" class="form-control border" name="date" id="income_date" required>
             </div>
-
 
             <div class=" form-group">
                 <label for="income_amount">Income Amount</label>
@@ -36,4 +34,8 @@ Update Income
             <input type="submit" value="Update" class="btn btn-success">
         </form>
     </div>
+    <script>
+        document.getElementById("income_date").value = "{{income.date|date:'Y-m-d' }}";
+        document.getElementById("member").value = "{{income.member_id.id}}"
+    </script>
     {% endblock %}

@@ -29,13 +29,13 @@ Update Expenses
 
             <div class="form-group">
                 <label for="income_date">Date</label>
-                <input type="date" class="form-control border" name="date" id="income_date" required>
+                <input type="date" class="form-control border" name="date" id="date" required>
             </div>
 
             <div class="form-group">
                 <label for="income_amount">Expense Amount</label>
                 <input type="number" class="form-control border" name="expense_amount" id="expense_amount"
-                    placeholder="30000/-" value="{{getexpense.amount}}" required>
+                    value="{{ getexpense.amount}}" required>
             </div>
             <div class="form-group">
                 <label for="description">Description</label>
@@ -46,4 +46,9 @@ Update Expenses
         </form>
     </div>
 </div>
+<script>
+    document.getElementById("date").value = "{{ getexpense.date|date:'Y-m-d' }}";
+    document.getElementById("member").value = "{{ getexpense.member_id.id}}";
+    document.getElementById("category").value = "{{ getexpense.category_id.id}}"
+</script>
 {% endblock %}
