@@ -34,10 +34,10 @@ Income
     </div>
 </div>
 <div class="row">
-    <div class="col-md-12">
-        <table class="table border" style="margin-top: 20px;color: #fff ;">
+    <div class="col-md-7">
+        <h3 class="my-3">Income Data</h3>
+        <table class="table border" style="margin-top: 20px;color: #fff;">
             <thead class="thead-dark">
-                <h3 class="my-3" style="color: #fff;">Income Data</h3>
                 <tr>
                     <th scope="col">Member Name</th>
                     <th scope="col">Income</th>
@@ -53,10 +53,12 @@ Income
                     <td>{{ income.amount}}</td>
                     <td>{{ income.date }}</td>
                     <td>
-                        <a href="{% url 'update_income_view' id=income.id %}"><i class="fa fa-pencil-square-o fa-2x "
-                                aria-hidden="true"></i></a>
-                        <a href="{% url 'delete_income_view' id=income.id %}"><i class="fa fa-trash-o fa-2x ml-2"
-                                aria-hidden="true"></i></a>
+                        <a href="{% url 'update_income_view' id=income.id %}">
+                            <i class="fa fa-pencil-square-o fa-2x" aria-hidden="true"></i>
+                        </a>
+                        <a href="{% url 'delete_income_view' id=income.id %}">
+                            <i class="fa fa-trash-o fa-2x ml-2" aria-hidden="true"></i>
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -65,9 +67,37 @@ Income
                     <td colspan="4" style="text-align: center;">No Member Income</td>
                 </tr>
                 {% endif %}
-
             </tbody>
         </table>
     </div>
+    <div class="col-md-5">
+        <h3 class="my-3">Filters</h3>
+        <form action="{% url 'income_date_filter' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group p-3" style="background-color: #3c3c3c;border-radius: 7%;">
+                <label>Filter by:</label><br>
+                <input type="checkbox" id="date_chk_box" class="ui-checkbox" name="date_chk_box">
+                <label for="date_chk_box" name="date_chk_box">Date</label><br>
+                <input class="ui-checkbox" type="checkbox" id="member_chk_box" name="member_chk_box">
+                <label for="member_chk_box">Member</label><br><br>
+                <label for="member">Select member: </label>
+                <select class="form-control form-control-sm  border" name="member" id="member">
+                    <option value="" selected disabled>Choose member</option>
+                    {% for member in members %}
+                    <option value="{{member.id}}">{{member.first_name}} {{member.last_name}}</option>
+                    {% endfor %}
+                </select>
+                <label for="date">Here Records are From:</label><br>
+                <input type="date" name="startdate" id="startdate">
+                <label for="startdate">To:</label>
+                <input type="date" name="enddate" id="enddate">
+                <input type="submit" value="Filter" class="btn-success">
+            </div>
+        </form>
+    </div>
 </div>
+<script>
+    document.getElementById("startdate").value = "{{ start_date_of_month }}";
+    document.getElementById("enddate").value = "{{ current_date_of_month }}";
+</script>
 {% endblock %}

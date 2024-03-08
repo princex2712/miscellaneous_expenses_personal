@@ -301,9 +301,37 @@ def income_view(request):
     context={
         'members':members,
         'get_income':get_income,
-        'user':user
+        'user':user,
+        'start_date_of_month':datetimeinfo.convert_date_format(start_date_of_month),
+        'current_date_of_month':datetimeinfo.convert_date_format(current_date_of_month)
     }
     return render(request,'account/income.html',context)
+
+def income_date_filter(request):
+    if request.method == "POST":
+        get_income = IncomeModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+        members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+        user = MembersModel.objects.get(email=request.session['email'])
+        context = {
+            'user': user,
+            'members': members,
+        }
+
+        if 'date_chk_box' in request.POST:
+            startdate = request.POST['startdate']
+            enddate = request.POST['enddate']
+            get_income = get_income.filter(date__range=[startdate, enddate])
+            context['start_date_of_month'] = startdate
+            context['current_date_of_month'] = enddate
+            context['get_income'] = get_income
+        if 'member_chk_box' in request.POST:
+            member = request.POST['member']
+            get_income = get_income.filter(member_id_id = member)
+            context['get_income'] = get_income
+
+        return render(request, 'account/income.html', context)
+    else:
+        return redirect("Invalid request method")
 
 @login_required
 def expenses_view(request):
@@ -328,9 +356,46 @@ def expenses_view(request):
         'user':user,
         'categories':categories,
         'get_expenses':get_expenses,
-        'members':members
+        'members':members,
+        'start_date_of_month':datetimeinfo.convert_date_format(start_date_of_month),
+        'current_date_of_month':datetimeinfo.convert_date_format(current_date_of_month)
     }
     return render(request, 'account/expense.html',context)
+
+def expense_date_filter(request):
+    if request.method == "POST":
+        get_expenses = Expenses.objects.filter(superuser_id_id=request.session['superuser_id'])
+        user = MembersModel.objects.get(email=request.session['email'])
+        categories = Category.objects.all()
+        members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
+        context = {
+            'user': user,
+            'members': members,
+            'categories': categories,
+        }
+        if 'date_chk_box' in request.POST:
+            startdate = request.POST['startdate']
+            enddate = request.POST['enddate']
+            get_expenses = get_expenses.filter(date__range=[startdate, enddate])
+            context['start_date_of_month'] = startdate
+            context['current_date_of_month'] = enddate
+            context['get_expenses'] = get_expenses
+        
+        if 'category_chk_box' in request.POST:
+            category = request.POST['category']
+            print(category)
+            get_expenses = get_expenses.filter(category_id_id=category)
+            context['get_expenses'] = get_expenses
+
+
+        if 'member_chk_box' in request.POST:
+            member = request.POST['member']
+            get_expenses = get_expenses.filter(member_id_id = member)
+            context['get_expenses'] = get_expenses
+
+        return render(request, 'account/expense.html', context)
+    else:
+        return redirect("Invalid request method")
 
 def update_income_view(request,id):
     getIncome = IncomeModel.objects.get(id=id)
