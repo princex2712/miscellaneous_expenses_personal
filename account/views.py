@@ -49,9 +49,6 @@ def get_record_via_filter(request,category_id):
         if getExpense.exists():
             ExpensesRecord.append(getExpense)
             print(getExpense)
-    # context = {
-    #     'ExpensesRecord':ExpensesRecord
-    # }
     return redirect('dashboard_view')
 @login_required
 def members_view(request):
@@ -318,16 +315,27 @@ def income_date_filter(request):
         }
 
         if 'date_chk_box' in request.POST:
-            startdate = request.POST['startdate']
-            enddate = request.POST['enddate']
-            get_income = get_income.filter(date__range=[startdate, enddate])
-            context['start_date_of_month'] = startdate
-            context['current_date_of_month'] = enddate
-            context['get_income'] = get_income
+            try:
+                startdate = request.POST['startdate']
+                enddate = request.POST['enddate']
+                get_income = get_income.filter(date__range=[startdate, enddate])
+                context['start_date_of_month'] = startdate
+                context['current_date_of_month'] = enddate
+                context['get_income'] = get_income
+            except Exception as e:
+                print(e)
+                messages.warning(request,"Invalid or Empty Date!")
+                return redirect('income_view')
+            
         if 'member_chk_box' in request.POST:
-            member = request.POST['member']
-            get_income = get_income.filter(member_id_id = member)
-            context['get_income'] = get_income
+            try:
+                member = request.POST['member']
+                get_income = get_income.filter(member_id_id = member)
+                context['get_income'] = get_income
+            except Exception as e:
+                print(e)
+                messages.warning(request,"Invalid or Empty Member!")
+                return redirect('income_view')
 
         return render(request, 'account/income.html', context)
     else:
@@ -340,13 +348,13 @@ def expenses_view(request):
     members = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
     get_expenses = Expenses.objects.filter(superuser_id_id=request.session['superuser_id']).filter(date__range=[datetimeinfo.convert_date_format(start_date_of_month),datetimeinfo.convert_date_format(current_date_of_month)])
     if request.method=='POST':
-        date_ = request.POST['date']
-        amount_ = request.POST['income_amount']
-        description_ = request.POST['description']
-        member_id=request.POST['member']
-        category_id=request.POST['category']
-        superuser_id_=request.session['superuser_id']
         try:
+            date_ = request.POST['date']
+            amount_ = request.POST['income_amount']
+            description_ = request.POST['description']
+            member_id=request.POST['member']
+            category_id=request.POST['category']
+            superuser_id_=request.session['superuser_id']
             new_expense = Expenses(superuser_id_id=superuser_id_,date=date_,amount=amount_,description=description_,member_id_id=member_id,category_id_id=category_id)
             new_expense.save()
             return redirect('expenses_view')
@@ -374,25 +382,38 @@ def expense_date_filter(request):
             'categories': categories,
         }
         if 'date_chk_box' in request.POST:
-            startdate = request.POST['startdate']
-            enddate = request.POST['enddate']
-            get_expenses = get_expenses.filter(date__range=[startdate, enddate])
-            context['start_date_of_month'] = startdate
-            context['current_date_of_month'] = enddate
-            context['get_expenses'] = get_expenses
+            try:
+                startdate = request.POST['startdate']
+                enddate = request.POST['enddate']
+                get_expenses = get_expenses.filter(date__range=[startdate, enddate])
+                context['start_date_of_month'] = startdate
+                context['current_date_of_month'] = enddate
+                context['get_expenses'] = get_expenses
+            except Exception as e:
+                print(e)
+                messages.warning(request,"Invalid or Empty Date!")
+                return redirect('expenses_view')
         
         if 'category_chk_box' in request.POST:
-            category = request.POST['category']
-            print(category)
-            get_expenses = get_expenses.filter(category_id_id=category)
-            context['get_expenses'] = get_expenses
-
+            try:
+                category = request.POST['category']
+                get_expenses = get_expenses.filter(category_id_id=category)
+                context['get_expenses'] = get_expenses
+            except:
+                print(e)
+                messages.warning(request,"Invalid or Empty Category!")
+                return redirect('expenses_view')
 
         if 'member_chk_box' in request.POST:
-            member = request.POST['member']
-            get_expenses = get_expenses.filter(member_id_id = member)
-            context['get_expenses'] = get_expenses
-
+            try:
+                member = request.POST['member']
+                get_expenses = get_expenses.filter(member_id_id = member)
+                context['get_expenses'] = get_expenses
+            except Exception as e:
+                print(e)
+                messages.warning(request,"Invalid or Empty Member!")
+                return redirect('expenses_view')   
+            
         return render(request, 'account/expense.html', context)
     else:
         return redirect("Invalid request method")
