@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Sum
+from django.http import HttpResponseNotAllowed
 
 import openpyxl
 
@@ -13,7 +14,7 @@ from master.utils.ME_REPORT.me_report import IncomeExpense
 from master.utils.ME_FORMAT.format_amount import format_amount
 from functools import wraps
 from authentication.forms import MembersForm
-from authentication.models import MembersModel
+from authentication.models import MembersModel,SuperUserModel
 from .models import IncomeModel,Category,Expenses
 
 # creating object to use classes 
@@ -29,6 +30,26 @@ def login_required(view_func):
             return redirect('login_view')
         return view_func(request, *args, **kwargs)
     return _wrapped_view
+
+def register_super_user(request):
+    if request.method == "POST":
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        phone = request.POST['phone']
+        email = request.POST['email']
+        if MembersModel.objects.filter(email=email).exists():
+            messages.warning(request,"Email Already Taken!")
+            return redirect('register_super_user')
+        try:
+            new_user = SuperUserModel(first_name=first_name,last_name=last_name,email=email,mobile=phone)
+            new_user.save()
+        except Exception as e:
+            print(e)
+            return HttpResponseNotAllowed(['POST'])
+        else:
+            messages.success(request,"Register Successfully!")
+            return redirect('login_view')
+    return render(request,"account/register.html")
 
 @login_required
 def dashboard_view(request):
@@ -339,7 +360,7 @@ def income_date_filter(request):
 
         return render(request, 'account/income.html', context)
     else:
-        return redirect("Invalid request method")
+        return HttpResponseNotAllowed(['POST'])
 
 @login_required
 def expenses_view(request):
@@ -416,7 +437,7 @@ def expense_date_filter(request):
             
         return render(request, 'account/expense.html', context)
     else:
-        return redirect("Invalid request method")
+        return HttpResponseNotAllowed(['POST'])
 
 def update_income_view(request,id):
     getIncome = IncomeModel.objects.get(id=id)
