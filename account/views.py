@@ -10,6 +10,7 @@ import openpyxl
 
 from master.utils.ME_DATETIME.me_time import DateTimeInformation
 from master.utils.ME_UNIQUE.generate_otp import generate_otp
+from master.utils.ME_UNIQUE.generate_otp import generate_otp
 from master.utils.ME_REPORT.me_report import IncomeExpense
 from master.utils.ME_FORMAT.format_amount import format_amount
 from functools import wraps
@@ -43,11 +44,12 @@ def register_super_user(request):
         try:
             new_user = SuperUserModel(first_name=first_name,last_name=last_name,email=email,mobile=phone)
             new_user.save()
+            
         except Exception as e:
             print(e)
             return HttpResponseNotAllowed(['POST'])
         else:
-            messages.success(request,"Register Successfully!")
+            messages.success(request,"Register Successfully! Password sent on your Email.")
             return redirect('login_view')
     return render(request,"account/register.html")
 
@@ -265,6 +267,18 @@ def login_view(request):
             else:
                 messages.warning(request,"Account is deactive Contact Your Admin!")
                 return redirect('login_view')
+    elif 'email' in request.session:
+        try:
+            getMembers = MembersModel.objects.get(email=request.session['email'])
+        except MembersModel.DoesNotExist:
+            return redirect('login_view')
+        else:
+            request.session['superuser_id'] = getMembers.superuser_id_id
+            request.session['members_id'] = getMembers.id
+            request.session['first_name'] = getMembers.first_name
+            request.session['last_name'] = getMembers.last_name
+            request.session['mobile'] = getMembers.mobile
+            return redirect('dashboard_view')
     return render(request,'account/login.html')
 
 @login_required
@@ -325,6 +339,7 @@ def income_view(request):
     }
     return render(request,'account/income.html',context)
 
+@login_required
 def income_date_filter(request):
     if request.method == "POST":
         get_income = IncomeModel.objects.filter(superuser_id_id=request.session['superuser_id'])
@@ -391,6 +406,7 @@ def expenses_view(request):
     }
     return render(request, 'account/expense.html',context)
 
+@login_required
 def expense_date_filter(request):
     if request.method == "POST":
         get_expenses = Expenses.objects.filter(superuser_id_id=request.session['superuser_id'])
@@ -438,7 +454,8 @@ def expense_date_filter(request):
         return render(request, 'account/expense.html', context)
     else:
         return HttpResponseNotAllowed(['POST'])
-
+    
+@login_required
 def update_income_view(request,id):
     getIncome = IncomeModel.objects.get(id=id)
     getmember = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
@@ -457,12 +474,14 @@ def update_income_view(request,id):
     }
     return render(request,'account/update_income.html',context)
 
+@login_required
 def delete_income_view(request,id):
     getIncome = IncomeModel.objects.get(id=id)
     getIncome.delete()
     messages.success(request,"Income Deleted Successfully!")
     return redirect('income_view')
 
+@login_required
 def update_expense_view(request,id):
     getexpense = Expenses.objects.get(id=id)
     getmember = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])
@@ -484,6 +503,7 @@ def update_expense_view(request,id):
     }
     return render(request,'account/update_expense.html',context)
 
+@login_required
 def delete_expense_view(request, id):
     try:
         getexpense = Expenses.objects.get(id=id)
@@ -494,7 +514,7 @@ def delete_expense_view(request, id):
     
     return redirect('expenses_view')
 
-
+@login_required
 def download_income_report(request):
     ie = IncomeExpense(request.session['superuser_id'])
     member_income_list = []
@@ -527,7 +547,7 @@ def download_income_report(request):
     workbook.save(response)
 
     return response
-
+@login_required
 def download_expense_report(request):
     ie = IncomeExpense(request.session['superuser_id'])
     total_expense = ie.current_total_expense()
