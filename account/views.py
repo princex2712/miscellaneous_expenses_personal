@@ -51,7 +51,7 @@ def register_super_user(request):
         else:
             messages.success(request,"Register Successfully! Password sent on your Email.")
             return redirect('login_view')
-    return render(request,"account/register.html")
+    return render(request,"register.html")
 
 @login_required
 def dashboard_view(request):
@@ -61,7 +61,7 @@ def dashboard_view(request):
         'user':user,
         'unique_category_names':unique_category_names
     }
-    return render(request, 'account/dashboard.html',context)
+    return render(request, 'dashboard.html',context)
 
 @login_required
 def get_record_via_filter(request,category_id):
@@ -105,7 +105,7 @@ def members_view(request):
         'members':members,
         'user':user
     }
-    return render(request,'account/members.html',context)
+    return render(request,'members.html',context)
 
 @login_required
 def profile_view(request):
@@ -138,7 +138,7 @@ def profile_view(request):
         'total_expense':format_amount(total_expense),
         'remaining_amount':format_amount(remaining_amount)
     }
-    return render(request,'account/profile.html',context)
+    return render(request,'profile.html',context)
 
 
 def forgot_password_view(request):
@@ -177,9 +177,9 @@ def forgot_password_view(request):
         context = {
             "email": email_
         }
-        return render(request, 'account/otp_varification.html', context)
+        return render(request, 'otp_varification.html', context)
 
-    return render(request, 'account/forgot_password.html')
+    return render(request, 'forgot_password.html')
 
 def otp_varification_view(request):
     if request.method == 'POST':
@@ -232,7 +232,7 @@ def otp_varification_view(request):
             return redirect('login_view')
 
     context = {'email': email_}
-    return render(request, 'account/otp_varification.html', context)
+    return render(request, 'otp_varification.html', context)
 
 @login_required
 def logout(request):
@@ -279,7 +279,7 @@ def login_view(request):
             request.session['last_name'] = getMembers.last_name
             request.session['mobile'] = getMembers.mobile
             return redirect('dashboard_view')
-    return render(request,'account/login.html')
+    return render(request,'login.html')
 
 @login_required
 def update_member_view(request,id):
@@ -303,7 +303,7 @@ def update_member_view(request,id):
         messages.success(request,f"{getUser.first_name} {getUser.last_name} is Updated Successfully")
         return redirect('members_view')
 
-    return render(request,'account/update_member.html',context)
+    return render(request,'update_member.html',context)
 
 @login_required
 def delete_member_view(request,id):
@@ -337,7 +337,7 @@ def income_view(request):
         'start_date_of_month':datetimeinfo.convert_date_format(start_date_of_month),
         'current_date_of_month':datetimeinfo.convert_date_format(current_date_of_month)
     }
-    return render(request,'account/income.html',context)
+    return render(request,'income.html',context)
 
 @login_required
 def income_date_filter(request):
@@ -373,7 +373,7 @@ def income_date_filter(request):
                 messages.warning(request,"Invalid or Empty Member!")
                 return redirect('income_view')
 
-        return render(request, 'account/income.html', context)
+        return render(request, 'income.html', context)
     else:
         return HttpResponseNotAllowed(['POST'])
 
@@ -404,7 +404,7 @@ def expenses_view(request):
         'start_date_of_month':datetimeinfo.convert_date_format(start_date_of_month),
         'current_date_of_month':datetimeinfo.convert_date_format(current_date_of_month)
     }
-    return render(request, 'account/expense.html',context)
+    return render(request, 'expense.html',context)
 
 @login_required
 def expense_date_filter(request):
@@ -451,7 +451,7 @@ def expense_date_filter(request):
                 messages.warning(request,"Invalid or Empty Member!")
                 return redirect('expenses_view')   
             
-        return render(request, 'account/expense.html', context)
+        return render(request, 'expense.html', context)
     else:
         return HttpResponseNotAllowed(['POST'])
     
@@ -472,7 +472,7 @@ def update_income_view(request,id):
         'user':user,
         'members':getmember
     }
-    return render(request,'account/update_income.html',context)
+    return render(request,'update_income.html',context)
 
 @login_required
 def delete_income_view(request,id):
@@ -501,7 +501,7 @@ def update_expense_view(request,id):
         'members':getmember,
         'categories':categories
     }
-    return render(request,'account/update_expense.html',context)
+    return render(request,'update_expense.html',context)
 
 @login_required
 def delete_expense_view(request, id):
