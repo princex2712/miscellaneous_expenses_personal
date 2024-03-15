@@ -1,27 +1,26 @@
-# Miscellaneous expense
-
+# Miscellaneous Expense
 
 [Click here to Visit my website](https://miscellaneousexpense.pythonanywhere.com/)
 
->Note: Please re-login if you get forbidden error or csrf_token varification fail, It will only occurs first time
+> Note: Please re-login if you encounter a forbidden error or CSRF token verification fail. This may occur the first time you use the application.
 
-
-This Project designed to facilitate  income and expense management within your family or living arrangements. In this Project Development I used python as backend technology and HTML/CSS as an Frontend technology, And MYSQLite is used to store the data of users. I have added features like download income-expense report, CRUD on New Member and also on income-expense to track all the miscellaneous expense and income.
+This project is designed to facilitate income and expense management within your family or living arrangements. In this project development, Python is used as the backend technology and HTML/CSS as the frontend technology. MYSQLite is used to store the data of users. Features include downloading income-expense reports, CRUD operations on New Members, and tracking all miscellaneous expenses and income.
 
 - Django framework
-- HTML/CSS as Frontend 
+- HTML/CSS as Frontend
 - Python As Backend
 - MYSQLite3 as Database
+
 ## Features
 
 - Login/Register
-- Add Family or home-living with. 
+- Add Family or home-living with.
 - Can add income and expense
-- Can filter record as category, date and member
-- Can export report of current month
+- Can filter records by category, date, and member
+- Can export a report of the current month
 
+## Tools and Technologies
 
-## Tools and Tech
 - [SQLite](https://docs.python.org/3/library/sqlite3.html) - Library for database management in Python
 - [Vs Code](https://code.visualstudio.com/) - Editor used to develop the project
 - [GitHub](https://github.com/) - Platform used for version control and collaboration
@@ -36,32 +35,32 @@ Dillinger requires [Node.js](https://nodejs.org/) v10+ to run.
 
 1. Clone the repository:
 
-    ```sh
-    git clone https://github.com/princex2712/miscellaneous_expenses_personal.git
-    ```
-
+   ```sh
+   git clone https://github.com/princex2712/miscellaneous_expenses_personal.git
+   ```
 
 2. Navigate into the cloned repository directory:
 
-    ```sh
-    cd miscellaneous_expenses_personal
-    ```
+   ```sh
+   cd miscellaneous_expenses_personal
+   ```
 
 3. Create environment and Install dependencies:
 
-    ```sh
-    python -m venv <your-venv-name>
-    ```
-     ```sh
-    pip install -r requirements.txt
-    ```
+   ```sh
+   python -m venv <your-venv-name>
+   ```
 
-4. Start the server after activate venv:
+   ```sh
+   pip install -r requirements.txt
+   ```
 
-    ```sh
-    python manage.py runserver
-    ```
+4. Start the server after activating the virtual environment:
 
-Now check default port or cntrl+click on the link on cmd to open on your browser. 
+   ```sh
+   python manage.py runserver
+   ```
 
+Now check the default port or Ctrl+click on the link in the command prompt to open it in your browser.
 
+Fix any issues and let me know if you need further assistance.
