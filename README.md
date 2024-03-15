@@ -31,8 +31,6 @@ This project is designed to facilitate income and expense management within your
 
 ## Installation
 
-Dillinger requires [Node.js](https://nodejs.org/) v10+ to run.
-
 1. Clone the repository:
 
    ```sh
