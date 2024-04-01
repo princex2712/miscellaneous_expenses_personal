@@ -16,7 +16,7 @@ from master.utils.ME_FORMAT.format_amount import format_amount
 from functools import wraps
 from authentication.forms import MembersForm
 from authentication.models import MembersModel,SuperUserModel
-from .models import IncomeModel,Category,Expenses
+from .models import IncomeModel,Category,Expenses,ImgSlider
 
 # creating object to use classes 
 datetimeinfo = DateTimeInformation()
@@ -56,13 +56,30 @@ def register_super_user(request):
 @login_required
 def dashboard_view(request):
     user = MembersModel.objects.get(email = request.session['email'])
+    images = ImgSlider.objects.all()
     unique_category_names = Category.objects.filter(expenses__superuser_id=request.session['superuser_id']).values_list('id','name').distinct()
     context = {
         'user':user,
-        'unique_category_names':unique_category_names
+        'unique_category_names':unique_category_names,
+        'images':images
     }
     return render(request, 'dashboard.html',context)
-
+@login_required
+def images_view(request):
+    user = MembersModel.objects.get(email = request.session['email'])
+    if request.method == 'POST':
+        image_file = request.FILES.get('image')
+        if image_file:
+            img_slider = ImgSlider(superuser_id_id=request.session['superuser_id'],photo=image_file)
+            img_slider.save()
+            messages.success(request,'Image saved successfully.')
+            return redirect('images')
+        else:
+            return HttpResponse("No file uploaded.")
+    context = {
+        'user':user,
+    }
+    return render(request, 'images.html',context)
 @login_required
 def get_record_via_filter(request,category_id):
     getmember = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])

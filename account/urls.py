@@ -1,9 +1,12 @@
 from django.urls import path
 from .views import *
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('register_super_user/', register_super_user, name='register_super_user'),
     path('dashboard_view/', dashboard_view, name='dashboard_view'),
     path('members_view/', members_view, name='members_view'),
+    path('images/', images_view, name='images'),
     path('profile_view/', profile_view, name='profile_view'),
     path('forgot_password_view/', forgot_password_view, name='forgot_password_view'),
     path('otp_varification_view/', otp_varification_view, name='otp_varification_view'),
@@ -22,4 +25,6 @@ urlpatterns = [
     path('income_report/',download_income_report,name='download_income_report'),
     path('expense_report/',download_expense_report,name='download_expense_report'),
     path('get_record_via_filter/<int:category_id>',get_record_via_filter,name='get_record_via_filter')
-]
+] 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
