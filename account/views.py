@@ -67,7 +67,11 @@ def dashboard_view(request):
 @login_required
 def images_view(request):
     user = MembersModel.objects.get(email = request.session['email'])
+    images = ImgSlider.objects.all()
     if request.method == 'POST':
+        if len(images)>=5:
+            messages.warning(request,'Only 5 images can set in slider!')
+            return redirect('images')
         image_file = request.FILES.get('image')
         if image_file:
             img_slider = ImgSlider(superuser_id_id=request.session['superuser_id'],photo=image_file)
@@ -75,11 +79,27 @@ def images_view(request):
             messages.success(request,'Image saved successfully.')
             return redirect('images')
         else:
-            return HttpResponse("No file uploaded.")
+            messages.warning(request,'Select Image First.')
+            return redirect('images')
     context = {
         'user':user,
+        'images':images
     }
     return render(request, 'images.html',context)
+
+@login_required
+def delete_image(request, id):
+    try:
+        img_instance = ImgSlider.objects.get(id=id)
+        img_instance.delete()
+        messages.success(request, 'Image Deleted Successfully.')
+    except ImgSlider.DoesNotExist:
+        messages.warning(request, 'Image does not exist.')
+    except Exception as e:
+        messages.warning(request, 'Something went wrong.')
+
+    return redirect('dashboard_view')
+
 @login_required
 def get_record_via_filter(request,category_id):
     getmember = MembersModel.objects.filter(superuser_id_id=request.session['superuser_id'])

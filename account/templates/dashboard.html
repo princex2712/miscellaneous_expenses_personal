@@ -33,7 +33,7 @@ Dashboard
         </div>
     </div>
     <div class="expense-link">
-        <h5 style="color: #fff;">Want to check out expense ? click below</h5>
+        <h6 style="color: #fff; margin-top: 30px;">Want to check out expense ? click below</h6>
         <a href="{% url 'expenses_view' %}" class="expense-btn">Go to Expense Page</a>
     </div>
 </div>
@@ -138,7 +138,7 @@ Dashboard
     function startAutoSlide() {
         intervalId = setInterval(() => {
             changeSlide(1);
-        }, 2000);
+        }, 3000);
     }
 
     function stopAutoSlide() {
