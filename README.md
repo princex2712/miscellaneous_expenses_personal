@@ -1,6 +1,6 @@
 # Miscellaneous Expense
 
-[Click here to Visit my website](https://miscellaneousexpense.pythonanywhere.com/)
+[Click here to Visit my website](https://miscelaneousexpense.pythonanywhere.com/)
 
 >You can use below email and password for demo.
 
