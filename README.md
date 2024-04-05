@@ -1,6 +1,18 @@
 # Miscellaneous Expense
 
 [Click here to Visit my website](https://miscellaneousexpense.pythonanywhere.com/)
+You can use below email and password for demo.
+
+>Email:
+
+   ```sh
+   princex2712@gmail.com
+   ```
+>Password:
+
+   ```sh
+   1234
+   ```
 
 > Note: Please re-login if you encounter a forbidden error or CSRF token verification fail. This may occur the first time you use the application.
 
